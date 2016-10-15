@@ -1,0 +1,9 @@
+[{
+  "modid": "teatime",
+  "name": "Tea Time",
+  "description": "A mod about tea.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authorList": ["Harry9137","Angeltxilon"],
+
+}

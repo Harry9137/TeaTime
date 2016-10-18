@@ -5,5 +5,5 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "authorList": ["Harry9137","Angeltxilon"],
-
-}
+  "updateJSON": "https://raw.githubusercontent.com/Harry9137/TeaTime/master/update.json",
+}]

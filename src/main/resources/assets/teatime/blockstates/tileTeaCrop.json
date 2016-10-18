@@ -1,0 +1,50 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cross"
+  },
+  "variants": {
+    "age": {
+      "0": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_0"
+        }
+      },
+      "1": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_0"
+        }
+      },
+      "2": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_0"
+        }
+      },
+      "3": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_1"
+        }
+      },
+      "4": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_1"
+        }
+      },
+      "5": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_1"
+        }
+      },
+      "6": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_1"
+        }
+      },
+      "7": {
+        "textures": {
+          "cross": "teatime:blocks/CropTea_2"
+        }
+      }
+    }
+  }
+}

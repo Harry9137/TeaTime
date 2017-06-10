@@ -17,23 +17,23 @@ public class ModCrops {
     public static HashMap<BlockCropBase, Item> seedsMap = new HashMap<BlockCropBase, Item>();
     public static HashMap<BlockCropBase, Item> harvestItemMap = new HashMap<BlockCropBase, Item>();
 
-    public static Block TeaBlock;
+    public static BlockCropBase TeaBlock;
     public static Item TeaSeed;
     public static Item TeaLeaf;
 
     public static void init(){
         TeaBlock = registerCrop(new BlockTea());
-        TeaSeed = registerSeed((BlockCropBase) TeaBlock, new ItemTeaSeed(TeaBlock));
-        TeaLeaf = registerHarvestItem((BlockCropBase) TeaBlock, new ItemTeaLeaf());
+        TeaSeed = registerSeed(TeaBlock, new ItemTeaSeed(TeaBlock));
+        TeaLeaf = registerHarvestItem(TeaBlock, new ItemTeaLeaf());
     }
 
-    private static Block registerCrop(BlockCropBase blockCropBase){
-        if(blockCropBase.getRegistryName() == null){
-            FMLLog.bigWarning("You forgot to give " + blockCropBase.getClass().toString() + " a registry name.");
+    private static BlockCropBase registerCrop(BlockCropBase crop){
+        if(crop.getRegistryName() == null){
+            FMLLog.bigWarning("You forgot to give " + crop.getClass().toString() + " a registry name.");
             return null;
         }
-        register(blockCropBase);
-        return blockCropBase;
+        register(crop);
+        return crop;
     }
 
     private static Item registerSeed(BlockCropBase crop, Item item){

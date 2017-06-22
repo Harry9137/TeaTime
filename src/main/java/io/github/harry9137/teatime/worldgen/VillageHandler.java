@@ -12,8 +12,8 @@ import java.util.Random;
 
 public class VillageHandler implements VillagerRegistry.IVillageCreationHandler {
     @Override
-    public StructureVillagePieces.PieceWeight getVillagePieceWeight(Random random, int i) {
-        return new StructureVillagePieces.PieceWeight(TeaField.class, 3, MathHelper.getRandomIntegerInRange(random, 2 + i, 4 + i * 2));
+    public StructureVillagePieces.PieceWeight getVillagePieceWeight(Random random, int villageSize) {
+        return new StructureVillagePieces.PieceWeight(TeaField.class, 3, MathHelper.getRandomIntegerInRange(random, 2 + villageSize, 4 + villageSize * 2));
     }
 
     @Override
@@ -22,10 +22,7 @@ public class VillageHandler implements VillagerRegistry.IVillageCreationHandler 
     }
 
     @Override
-    public StructureVillagePieces.Village buildComponent(StructureVillagePieces.PieceWeight villagePiece, StructureVillagePieces.Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2, int p3, EnumFacing facing, int p5) {
-        StructureBoundingBox var8 = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 7, 4, 9, facing);
-        TeaField teaField = new TeaField(startPiece, 0, random, var8, facing);
-        teaField.buildComponent(startPiece, pieces, random);
-        return teaField;
+    public StructureVillagePieces.Village buildComponent(StructureVillagePieces.PieceWeight villagePiece, StructureVillagePieces.Start startPiece, List<StructureComponent> pieces, Random random, int structureMinX, int structureMinY, int structureMinZ, EnumFacing facing, int componentType) {
+        return TeaField.createPiece(startPiece, pieces, structureMinX, structureMinY, structureMinZ, facing, componentType);
     }
 }

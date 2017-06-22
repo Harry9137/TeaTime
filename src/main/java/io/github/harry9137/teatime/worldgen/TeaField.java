@@ -1,5 +1,6 @@
 package io.github.harry9137.teatime.worldgen;
 
+import io.github.harry9137.teatime.block.BlockCropBase;
 import io.github.harry9137.teatime.registry.ModCrops;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -16,69 +17,34 @@ import net.minecraft.world.gen.structure.StructureVillagePieces;
 import java.util.List;
 import java.util.Random;
 
-/*
-    A modified version of {@Link net.minecraft.world.gen.structure.StructureVillagePieces.Field2}
+/**
+ * A modified version of {@link net.minecraft.world.gen.structure.StructureVillagePieces.Field2}
  */
 public class TeaField extends StructureVillagePieces.Village
 {
-    /** First crop type for this field. */
-    private Block cropTypeA;
-    /** Second crop type for this field. */
-    private Block cropTypeB;
-
     public TeaField()
     {
     }
 
-    public TeaField(StructureVillagePieces.Start start, int type, Random rand, StructureBoundingBox p_i45569_4_, EnumFacing facing)
+    public TeaField(StructureVillagePieces.Start start, int type, StructureBoundingBox boundingBox, EnumFacing facing)
     {
         super(start, type);
         this.setCoordBaseMode(facing);
-        this.boundingBox = p_i45569_4_;
-        this.cropTypeA = this.getRandomCropType(rand);
-        this.cropTypeB = this.getRandomCropType(rand);
+        this.boundingBox = boundingBox;
     }
 
-    /**
-     * (abstract) Helper method to write subclass data to NBT
-     */
-    protected void writeStructureToNBT(NBTTagCompound tagCompound)
+    public static TeaField createPiece(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, int structureMinX, int structureMinY, int structureMinZ, EnumFacing facing, int componentType)
     {
-        super.writeStructureToNBT(tagCompound);
-        tagCompound.setInteger("CA", Block.REGISTRY.getIDForObject(this.cropTypeA));
-        tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
+        StructureBoundingBox structureBoundingBox = StructureBoundingBox.getComponentToAddBoundingBox(structureMinX, structureMinY, structureMinZ, 0, 0, 0, 7, 4, 9, facing);
+        return canVillageGoDeeper(structureBoundingBox) && StructureComponent.findIntersecting(structureComponents, structureBoundingBox) == null ? new TeaField(start, componentType, structureBoundingBox, facing) : null;
     }
 
-    /**
-     * (abstract) Helper method to read subclass data from NBT
-     */
-    protected void readStructureFromNBT(NBTTagCompound tagCompound)
-    {
-        super.readStructureFromNBT(tagCompound);
-        this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
-        this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
-    }
-
-    private Block getRandomCropType(Random rand)
-    {
-        return ModCrops.TeaBlock;
-    }
-
-    public static TeaField createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175852_1_, Random rand, int p_175852_3_, int p_175852_4_, int p_175852_5_, EnumFacing facing, int p_175852_7_)
-    {
-        StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175852_3_, p_175852_4_, p_175852_5_, 0, 0, 0, 7, 4, 9, facing);
-        return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175852_1_, structureboundingbox) == null ? new TeaField(start, p_175852_7_, rand, structureboundingbox, facing) : null;
-    }
-
-    /**
-     * second Part of Structure generating, this for example places Spiderwebs, Mob Spawners, it closes
-     * Mineshafts at the end, it adds Fences...
-     */
-    public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
+    @Override
+    public boolean addComponentParts(World world, Random random, StructureBoundingBox structureBoundingBox)
     {
         if (this.averageGroundLvl < 0)
         {
-            this.averageGroundLvl = this.getAverageGroundLevel(worldIn, structureBoundingBoxIn);
+            this.averageGroundLvl = this.getAverageGroundLevel(world, structureBoundingBox);
 
             if (this.averageGroundLvl < 0)
             {
@@ -88,34 +54,32 @@ public class TeaField extends StructureVillagePieces.Village
             this.boundingBox.offset(0, this.averageGroundLvl - this.boundingBox.maxY + 4 - 1, 0);
         }
 
-        IBlockState iblockstate = this.getBiomeSpecificBlockState(Blocks.LOG.getDefaultState());
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 0, 1, 0, 6, 4, 8, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 0, 1, 2, 0, 7, Blocks.FARMLAND.getDefaultState(), Blocks.FARMLAND.getDefaultState(), false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 4, 0, 1, 5, 0, 7, Blocks.FARMLAND.getDefaultState(), Blocks.FARMLAND.getDefaultState(), false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 0, 0, 0, 0, 0, 8, iblockstate, iblockstate, false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 6, 0, 0, 6, 0, 8, iblockstate, iblockstate, false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 0, 0, 5, 0, 0, iblockstate, iblockstate, false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 0, 8, 5, 0, 8, iblockstate, iblockstate, false);
-        this.fillWithBlocks(worldIn, structureBoundingBoxIn, 3, 0, 1, 3, 0, 7, Blocks.WATER.getDefaultState(), Blocks.WATER.getDefaultState(), false);
+        IBlockState log = this.getBiomeSpecificBlockState(Blocks.LOG.getDefaultState());
+        this.fillWithBlocks(world, structureBoundingBox, 0, 1, 0, 6, 4, 8, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
+        this.fillWithBlocks(world, structureBoundingBox, 1, 0, 1, 2, 0, 7, Blocks.FARMLAND.getDefaultState(), Blocks.FARMLAND.getDefaultState(), false);
+        this.fillWithBlocks(world, structureBoundingBox, 4, 0, 1, 5, 0, 7, Blocks.FARMLAND.getDefaultState(), Blocks.FARMLAND.getDefaultState(), false);
+        this.fillWithBlocks(world, structureBoundingBox, 0, 0, 0, 0, 0, 8, log, log, false);
+        this.fillWithBlocks(world, structureBoundingBox, 6, 0, 0, 6, 0, 8, log, log, false);
+        this.fillWithBlocks(world, structureBoundingBox, 1, 0, 0, 5, 0, 0, log, log, false);
+        this.fillWithBlocks(world, structureBoundingBox, 1, 0, 8, 5, 0, 8, log, log, false);
+        this.fillWithBlocks(world, structureBoundingBox, 3, 0, 1, 3, 0, 7, Blocks.WATER.getDefaultState(), Blocks.WATER.getDefaultState(), false);
 
-        for (int i = 1; i <= 7; ++i)
+        for (int z = 1; z <= 7; ++z)
         {
-            int j = ((BlockCrops)this.cropTypeA).getMaxAge();
-            int k = j / 3;
-            this.setBlockState(worldIn, this.cropTypeA.getStateFromMeta(MathHelper.getRandomIntegerInRange(randomIn, k, j)), 1, 1, i, structureBoundingBoxIn);
-            this.setBlockState(worldIn, this.cropTypeA.getStateFromMeta(MathHelper.getRandomIntegerInRange(randomIn, k, j)), 2, 1, i, structureBoundingBoxIn);
-            int l = ((BlockCrops)this.cropTypeB).getMaxAge();
-            int i1 = l / 3;
-            this.setBlockState(worldIn, this.cropTypeB.getStateFromMeta(MathHelper.getRandomIntegerInRange(randomIn, i1, l)), 4, 1, i, structureBoundingBoxIn);
-            this.setBlockState(worldIn, this.cropTypeB.getStateFromMeta(MathHelper.getRandomIntegerInRange(randomIn, i1, l)), 5, 1, i, structureBoundingBoxIn);
+            int maxAge = ModCrops.TeaBlock.getMaxAge();
+            int minAge = maxAge / 3;
+            this.setBlockState(world, ModCrops.TeaBlock.getStateFromMeta(MathHelper.getRandomIntegerInRange(random, minAge, maxAge)), 1, 1, z, structureBoundingBox);
+            this.setBlockState(world, ModCrops.TeaBlock.getStateFromMeta(MathHelper.getRandomIntegerInRange(random, minAge, maxAge)), 2, 1, z, structureBoundingBox);
+            this.setBlockState(world, ModCrops.TeaBlock.getStateFromMeta(MathHelper.getRandomIntegerInRange(random, minAge, maxAge)), 4, 1, z, structureBoundingBox);
+            this.setBlockState(world, ModCrops.TeaBlock.getStateFromMeta(MathHelper.getRandomIntegerInRange(random, minAge, maxAge)), 5, 1, z, structureBoundingBox);
         }
 
-        for (int j1 = 0; j1 < 9; ++j1)
+        for (int z = 0; z < 9; ++z)
         {
-            for (int k1 = 0; k1 < 7; ++k1)
+            for (int x = 0; x < 7; ++x)
             {
-                this.clearCurrentPositionBlocksUpwards(worldIn, k1, 4, j1, structureBoundingBoxIn);
-                this.replaceAirAndLiquidDownwards(worldIn, Blocks.DIRT.getDefaultState(), k1, -1, j1, structureBoundingBoxIn);
+                this.clearCurrentPositionBlocksUpwards(world, x, 4, z, structureBoundingBox);
+                this.replaceAirAndLiquidDownwards(world, Blocks.DIRT.getDefaultState(), x, -1, z, structureBoundingBox);
             }
         }
 
